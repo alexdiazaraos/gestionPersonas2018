@@ -1,3 +1,5 @@
+<%@page import="cl.beans.PersonaBeanLocal"%>
+<%@page import="javax.naming.InitialContext"%>
 <%@include file="template/header.jsp" %>
 
 <c:if test="${not empty sessionScope.admin}">
@@ -19,14 +21,32 @@
                 </tr>
             </thead>
             <tbody>
-                <c:forEach items="${applicationScope.data}" var="p">
+                <%! private PersonaBeanLocal service; %>
+                <%
+                    InitialContext ctx = new InitialContext();
+                    service = (PersonaBeanLocal)
+                            //proyecto + bean + ruta local del proyecto
+                    ctx.lookup("java:global/EjercicioMartes/PersonaBean!cl.beans.PersonaBeanLocal");
+                    out.println("tam:"+service.getPersonaList().size());
+                %>
+                //permite crear un objeto a raiz de una variable
+                <c:set var="persona" 
+                    scope="page" 
+                    value="<%=service.getPersonaList() %>"
+                           />
+                    
+                
+                    <c:forEach items="${pageScope.persona}" var="p">
                     <tr>
                         <td>${p.rut}</td>
                         <td>${p.nombre}</td>
                         <td>${p.mail}</td>
                         <td>${p.perfil}</td>
                         <td>${p.activo?"Si":"No"}</td>
-                        <td><button name="boton" value="${p.rut}" class="btn-floating blue"><i class="material-icons">edit</i></button></td>
+                        <td><button name="boton" value="${p.rut}" class="btn-floating blue">
+                                <i class="material-icons">edit</i>
+                            </button>
+                        </td>
                     </tr>
                 </c:forEach> 
             </tbody>
